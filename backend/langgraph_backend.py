@@ -4,12 +4,42 @@ from langchain_core.messages import HumanMessage,BaseMessage
 from langgraph.graph.message import add_messages
 from langchain_groq import ChatGroq
 from langgraph.checkpoint.memory import MemorySaver
-from dotenv import load_dotenv
-load_dotenv()
 import os
-api_key=os.getenv("LANGCHAIN_GROQ_API_KEY")
+from dotenv import load_dotenv
 
-model=ChatGroq(api_key=api_key,model="llama-3.3-70b-versatile")
+# 1. Load environment variables for local development
+load_dotenv()
+
+def get_groq_api_key():
+    """
+    Retrieves the Groq API key from environment variables or Streamlit secrets.
+    Ensures the application works both locally (.env) and on Streamlit Cloud (Secrets).
+    """
+    # 1. Check Standard Environment Variable
+    api_key = os.getenv("GROQ_API_KEY") or os.getenv("LANGCHAIN_GROQ_API_KEY")
+    
+    # 2. Fallback to Streamlit Secrets (for Cloud deployment)
+    if not api_key:
+        try:
+            import streamlit as st
+            # Check both possible naming conventions in st.secrets
+            api_key = st.secrets.get("GROQ_API_KEY") or st.secrets.get("LANGCHAIN_GROQ_API_KEY")
+        except (ImportError, FileNotFoundError, Exception):
+            pass
+            
+    return api_key
+
+# Initialize API Key
+api_key = get_groq_api_key()
+
+# 2. Initialize Model with robust error checking
+if not api_key:
+    raise ValueError(
+        "Groq API Key not found! Please check your .env file (locally) "
+        "or add 'GROQ_API_KEY' to your Streamlit Cloud Secrets."
+    )
+
+model = ChatGroq(api_key=api_key, model="llama-3.3-70b-versatile")
 
 class ChatState(TypedDict):
     messages:Annotated[list[BaseMessage],add_messages]
