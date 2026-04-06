@@ -133,16 +133,15 @@ if prompt := st.chat_input("Ask me anything..."):
         with st.status("Thinking...", expanded=False) as status:
             try:
                 # Streaming through events
-                for event in workflow.stream(
+                for msg, metadata in workflow.stream(
                     {"messages": [HumanMessage(content=prompt)]}, 
                     config=config,
-                    stream_mode="values"
+                    stream_mode="messages"
                 ):
-                    if "messages" in event:
-                        last_msg = event["messages"][-1]
-                        if isinstance(last_msg, AIMessage):
-                            full_response = last_msg.content
-                            placeholder.markdown(full_response + " ▌")
+                    # We only care about tokens coming from our assistant chat node
+                    if metadata.get("langgraph_node") == "chat_node":
+                        full_response += msg.content
+                        placeholder.markdown(full_response + " ▌")
                 
                 # Final finish
                 placeholder.markdown(full_response)
