@@ -6,6 +6,7 @@ from langchain_groq import ChatGroq
 from langgraph.checkpoint.memory import MemorySaver
 import os
 from dotenv import load_dotenv
+import uuid
 
 
 load_dotenv()
@@ -56,6 +57,11 @@ graph.add_edge(START,"chat_node")
 graph.add_edge("chat_node",END)
 
 workflow=graph.compile(checkpointer=checkpointer)
+
+def generate_thread():
+    thread_id=uuid.uuid4()
+    return thread_id
+
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 import sys
-import base64
+import uuid
 
 # To allow importing from the 'backend' folder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -101,18 +101,42 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 3. Initialize Session State
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+def generate_thread_id():
+    return str(uuid.uuid4())
 
-# Persistent thread_id
-THREAD_ID = "premium_session_1"
-config = {"configurable": {"thread_id": THREAD_ID}}
+def load_conversation(thread_id):
+    config={"configurable":{"thread_id":thread_id}}
+    state_values=workflow.get_state(config).values
+    return  state_values.get("messages",[])
+
+
+def add_thread(thread_id):
+    if thread_id not in st.session_state.chat_threads:
+        st.session_state.chat_threads.append(thread_id)
+
+def reset_chat():
+    new_id=generate_thread_id()
+    st.session_state.thread_id=new_id
+    st.session_state.message_history=[]
+    add_thread(new_id)
+
+if "chat_threads" not in st.session_state:
+    st.session_state.chat_threads=[]
+
+if "thread_id" not in st.session_state:
+    st.session_state.thread_id=generate_thread_id()
+    add_thread(st.session_state.thread_id)
+
+if "message_history" not in st.session_state:
+    st.session_state.message_history=[]
+
+
 
 # 4. Main UI
 st.markdown("<h1>Intelligent Assistant</h1>", unsafe_allow_html=True)
 
 # 5. Message Display
-for message in st.session_state.messages:
+for message in st.session_state.message_history:
     # Use refined avatars
     avatar = "👤" if message["role"] == "user" else "🤖"
     with st.chat_message(message["role"], avatar=avatar):
@@ -121,7 +145,8 @@ for message in st.session_state.messages:
 # 6. Interaction
 if prompt := st.chat_input("Ask me anything..."):
     # User Message
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    config={"configurable":{"thread_id":st.session_state.thread_id}}
+    st.session_state.message_history.append({"role":"user","content":prompt})
     with st.chat_message("user", avatar="👤"):
         st.markdown(prompt)
 
@@ -151,22 +176,26 @@ if prompt := st.chat_input("Ask me anything..."):
                 st.error(f"Error: {e}")
                 full_response = "I encountered an error. Please check your connection."
 
-        st.session_state.messages.append({"role": "assistant", "content": full_response})
+        st.session_state.message_history.append({"role": "assistant", "content": full_response})
 
 # 7. Sidebar Customization
 with st.sidebar:
-    st.markdown("""
-        <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
-            <h2 style="margin-top:0; color: #818cf8;">System Status</h2>
-            <p style="color: #94a3b8; font-size: 0.9rem;">Model: Llama 3 (Groq)</p>
-            <p style="color: #94a3b8; font-size: 0.9rem;">State: Connected</p>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    st.write("")
-    if st.button("Clear History", use_container_width=True):
-        st.session_state.messages = []
-        st.rerun()
+    st.markdown("<h2 style='color:#818cf8;'>🤖 AI Assistant</h2>", unsafe_allow_html=True)
+
+    if st.button("➕ New Chat", use_container_width=True):
+        reset_chat()
+
+    st.markdown("### 💬 My Conversations")
+    for tid in reversed(st.session_state.chat_threads):
+        label = f"🗨️ ...{tid[-8:]}"
+        if st.button(label, key=tid, use_container_width=True):
+            st.session_state.thread_id = tid
+            messages = load_conversation(tid)
+            temp_messages = []
+            for msg in messages:
+                role = "user" if isinstance(msg, HumanMessage) else "assistant"
+                temp_messages.append({"role": role, "content": msg.content})
+            st.session_state.message_history = temp_messages
 
     st.markdown("---")
     st.caption("Powered by LangGraph & Streamlit")
