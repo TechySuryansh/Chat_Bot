@@ -1,0 +1,484 @@
+<!-- Code Assistant - Nexa AI (Obsidian Amber) -->
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Nexa AI - Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        
+        /* Inner glow effect for amber accents */
+        .glow-amber-border {
+            box-shadow: inset 0 1px 0 0 rgba(245, 166, 35, 0.3);
+        }
+        
+        /* Subtle scrollbar for chat */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #272D33;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #333537;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#2f3133",
+                        "tertiary-container": "#b2b7be",
+                        "outline-variant": "#524534",
+                        "on-tertiary-fixed": "#171c21",
+                        "on-secondary-fixed": "#251a00",
+                        "on-surface": "#e2e2e5",
+                        "surface-tint": "#ffb955",
+                        "on-primary": "#452b00",
+                        "secondary-fixed-dim": "#edc157",
+                        "surface-container": "#1e2022",
+                        "surface-container-low": "#1a1c1e",
+                        "secondary": "#edc157",
+                        "background": "#111416",
+                        "tertiary-fixed": "#dee3ea",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#633f00",
+                        "primary": "#ffc880",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "primary-fixed": "#ffddb4",
+                        "tertiary-fixed-dim": "#c2c7ce",
+                        "tertiary": "#ced2d9",
+                        "surface-container-high": "#282a2c",
+                        "on-tertiary-container": "#43484e",
+                        "primary-fixed-dim": "#ffb955",
+                        "secondary-container": "#906d00",
+                        "on-surface-variant": "#d7c3ae",
+                        "surface-container-highest": "#333537",
+                        "outline": "#9f8e7a",
+                        "inverse-surface": "#e2e2e5",
+                        "on-secondary-fixed-variant": "#5b4300",
+                        "on-secondary-container": "#fff7ee",
+                        "inverse-primary": "#835500",
+                        "surface-variant": "#333537",
+                        "primary-container": "#f5a623",
+                        "surface": "#111416",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#0c0e10",
+                        "on-tertiary": "#2c3136",
+                        "on-primary-fixed": "#291800",
+                        "on-background": "#e2e2e5",
+                        "on-primary-container": "#644000",
+                        "surface-bright": "#37393c",
+                        "on-secondary": "#3f2e00",
+                        "surface-dim": "#111416",
+                        "on-tertiary-fixed-variant": "#42474d",
+                        "secondary-fixed": "#ffdf9b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-margin": "4rem",
+                        "container-padding": "2rem",
+                        "sidebar-width": "280px",
+                        "element-gap": "1rem"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-sm": ["13px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#080A0C] text-on-surface font-body-md min-h-screen overflow-hidden flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-sidebar-width fixed left-0 top-0 bg-[#0D1013] border-r border-[#272D33] shadow-none z-20">
+<div class="p-element-gap flex flex-col h-full">
+<!-- Brand -->
+<div class="mb-8 px-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#161B20] to-[#111519] border border-[#272D33] flex items-center justify-center glow-amber-border">
+<span class="font-display-lg text-[24px] text-primary tracking-tight leading-none">N</span>
+</div>
+<div>
+<h1 class="font-headline-md text-[18px] text-primary tracking-tight leading-none">Nexa AI</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Premium Concierge</p>
+</div>
+</div>
+<!-- CTA -->
+<button id="new-chat-btn" class="mb-8 mx-4 bg-primary-container text-[#080A0C] hover:bg-primary-fixed transition-colors duration-200 rounded-lg py-3 px-4 font-label-sm flex items-center justify-center gap-2 glow-amber-border active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Chat
+            </button>
+<!-- Navigation -->
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-1" id="history-list">
+    <!-- History items will be injected here -->
+    <li><div class="px-4 py-3 text-on-surface-variant text-sm animate-pulse">Loading history...</div></li>
+</ul>
+<div class="mt-8 px-4 font-label-sm text-xs text-outline mb-2">TOOLS</div>
+<ul class="space-y-1">
+<li>
+<button id="open-settings-btn" class="w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200 active:scale-95 transition-transform">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</button>
+</li>
+</ul>
+</div>
+<!-- Footer -->
+<div class="mt-auto pt-4 border-t border-[#272D33]">
+<button class="w-full flex items-center gap-3 px-4 py-3 hover:bg-surface-container-high rounded-lg transition-colors duration-200">
+<img alt="Alex Mercer" class="w-8 h-8 rounded-full border border-[#272D33] object-cover" data-alt="A small, circular avatar portrait of a professional individual in a minimalist studio setting, high quality, soft studio lighting, sharp focus, neutral dark background to fit a dark UI theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqsiKUZ7QoanbYXGQcIuvu0fOX3Sv6W4cW17_QEQzwQN4Mv02jhjTIPcVMfH6bHfI95aw8Y5K4KH11w_knChSTu6VDKLgcBoTO0uQW0JQlO8J706_qQP-0A1AD0oPNMxyD7Gq2MoyY3vjjk82I8jsrfT0FsvBKZmsy233Oz0WRwqiyiNPiWdnxl4v8XNIILPqxAl0WZbLF5US5e60bOCmAZpqVHqzpcnncAe5Q9MUnEhNlp7jcoOe-">
+<span class="font-label-sm text-label-sm text-on-surface flex-1 text-left">Alex Mercer</span>
+<span class="material-symbols-outlined text-outline">more_horiz</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-sidebar-width h-screen relative">
+<!-- TopNavBar -->
+<header class="h-16 px-container-padding flex justify-between items-center bg-[#080A0C]/80 backdrop-blur-md border-b border-[#272D33] shadow-sm z-10 w-full absolute top-0 left-0">
+<div class="flex items-center gap-6">
+<!-- Mobile Menu Trigger -->
+<button class="md:hidden text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="font-headline-md text-headline-md text-on-surface hidden md:block">Nexa AI • Smart</div>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary font-bold border-b-2 border-primary pb-1" href="#">Models</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-all active:opacity-80" href="#">Settings</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors" title="Favorite">
+<span class="material-symbols-outlined">star</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors" title="Share">
+<span class="material-symbols-outlined">share</span>
+</button>
+<img alt="Alex Mercer" class="w-8 h-8 rounded-full border border-[#272D33] object-cover md:hidden" data-alt="A small, circular avatar portrait of a professional individual in a minimalist studio setting, high quality, soft studio lighting, sharp focus, neutral dark background to fit a dark UI theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVvK6AzqAeXRGHx8V5ipP1xnK-IzhlThZW4IOMKWpVCPIBRj23pcN0-3X3z2_XBxdTSx6YWbQVoBqNjpjhNOm9EInkiwaOfM51w9Xzn_FPcso5Re8AQQyFwpqXLrPeu89C6LIIj6qQpM6A6f0eLkxV-xPbzcqawUAvm5D9fgB18YHFkbEbTUGa99rdIkah-CoJ77te0sXcKfHtacYWCibkp-3mzFpNupJ19qTG-IlLUNZ4oroPuyc4">
+</div>
+</header>
+<!-- Chat Canvas -->
+<main class="flex-1 overflow-y-auto pt-24 pb-32 px-4 md:px-container-padding flex justify-center w-full">
+<div class="w-full max-w-[1200px] flex flex-col gap-8" id="chat-messages">
+</div>
+</main>
+<!-- Input Area (Fixed at bottom) -->
+<div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#080A0C] via-[#080A0C] to-transparent pt-10 pb-6 px-4 md:px-container-padding flex justify-center z-10">
+<div class="w-full max-w-[900px] relative">
+<div class="bg-[#0D1013] border border-[#272D33] rounded-2xl p-2 flex flex-col focus-within:border-primary/50 focus-within:shadow-[0_0_15px_rgba(245,166,35,0.1)] transition-all duration-300">
+<textarea id="chat-input" class="w-full bg-transparent text-on-surface border-none focus:ring-0 resize-none p-3 font-body-md min-h-[60px] max-h-[200px]" placeholder="Ask anything..." rows="1"></textarea>
+<div class="flex justify-between items-center px-2 pb-1">
+<div class="flex items-center gap-1">
+<button id="upload-btn" class="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-[#161B20] transition-colors relative">
+<span class="material-symbols-outlined">attach_file</span>
+<input type="file" id="file-input" class="hidden" accept=".pdf,.txt" style="display: none;">
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-[#161B20] transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+</div>
+<button id="send-button" class="bg-primary-container text-[#080A0C] p-2 rounded-xl hover:bg-primary-fixed transition-colors flex items-center justify-center glow-amber-border">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">arrow_upward</span>
+</button>
+</div>
+</div>
+<div class="text-center mt-3 font-label-sm text-xs text-outline">
+                    Nexa AI can make mistakes. Consider verifying important information.
+                </div>
+</div>
+</div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settings-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm">
+    <div class="bg-surface-container rounded-xl p-6 w-96 border border-[#272D33] shadow-2xl">
+        <h2 class="text-xl font-bold mb-4">Settings</h2>
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-2 text-on-surface-variant">System Persona</label>
+            <input type="text" id="persona-input" class="w-full bg-[#080A0C] border border-[#272D33] rounded-lg p-2 text-on-surface focus:outline-none focus:border-primary" placeholder="e.g. Speak like a pirate">
+        </div>
+        <div class="flex justify-end gap-2">
+            <button id="close-settings" class="px-4 py-2 text-on-surface-variant hover:text-on-surface">Cancel</button>
+            <button id="save-settings" class="px-4 py-2 bg-primary text-[#080A0C] rounded-lg font-bold">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let threadId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+    let persona = localStorage.getItem("chat_persona") || "You are a helpful AI assistant.";
+    const chatMessages = document.getElementById("chat-messages");
+    const chatInput = document.getElementById("chat-input");
+    const sendButton = document.getElementById("send-button");
+    const historyList = document.getElementById("history-list");
+
+    function createUserMessageElement(text) {
+        return `
+        <div class="flex justify-end w-full">
+            <div class="max-w-[80%] md:max-w-[70%]">
+                <div class="bg-[#161B20] text-on-surface font-body-md text-body-md rounded-2xl rounded-tr-sm p-4 border border-[#272D33] relative overflow-hidden">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary-container/50"></div>
+                    <p>${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
+    function createAIMessageElement(id) {
+        return `
+        <div class="flex justify-start w-full group" id="${id}">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#161B20] to-[#111519] border border-[#272D33] flex items-center justify-center glow-amber-border mr-4 mt-1 flex-shrink-0 hidden md:flex">
+                <span class="font-display-lg text-[16px] text-primary tracking-tight leading-none">N</span>
+            </div>
+            <div class="max-w-[90%] md:max-w-[80%]">
+                <div class="bg-[#111519] text-on-surface font-body-md text-body-md rounded-2xl rounded-tl-sm p-5 border border-[#272D33]">
+                    <p class="ai-content whitespace-pre-wrap"></p>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
+    async function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        chatInput.value = "";
+        
+        // Add user message
+        chatMessages.insertAdjacentHTML('beforeend', createUserMessageElement(message));
+        
+        // Prepare AI message block
+        const msgId = 'msg-' + Date.now();
+        chatMessages.insertAdjacentHTML('beforeend', createAIMessageElement(msgId));
+        const aiContentElement = document.getElementById(msgId).querySelector('.ai-content');
+        aiContentElement.innerHTML = '<span id="thinking-' + msgId + '" class="animate-pulse text-on-surface-variant">Thinking...</span>';
+        
+        chatMessages.parentElement.scrollTo(0, chatMessages.parentElement.scrollHeight);
+
+        let isFirstChunk = true;
+
+        try {
+            const response = await fetch("/chat/stream", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message, thread_id: threadId, persona: persona })
+            });
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let buffer = "";
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n\n");
+                buffer = lines.pop(); // Keep the last incomplete part in the buffer
+                
+                for (const line of lines) {
+                    if (line.startsWith("data: ")) {
+                        const dataStr = line.substring(6);
+                        if (dataStr === "[DONE]") {
+                            break;
+                        }
+                        try {
+                            const data = JSON.parse(dataStr);
+                            if (data.content) {
+                                if (isFirstChunk) {
+                                    aiContentElement.innerHTML = '';
+                                    isFirstChunk = false;
+                                }
+                                aiContentElement.textContent += data.content;
+                                chatMessages.parentElement.scrollTo(0, chatMessages.parentElement.scrollHeight);
+                            } else if (data.error) {
+                                aiContentElement.textContent += "\\nError: " + data.error;
+                            }
+                        } catch (e) {
+                            console.error("JSON parse error", e, dataStr);
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            aiContentElement.textContent = "Error connecting to the server.";
+        }
+    }
+
+    sendButton.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // File Upload Logic
+    const uploadBtn = document.getElementById("upload-btn");
+    const fileInput = document.getElementById("file-input");
+
+    uploadBtn.addEventListener("click", () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Show uploading message
+        chatMessages.insertAdjacentHTML('beforeend', createAIMessageElement('upload-msg'));
+        const uploadMsgElement = document.getElementById('upload-msg').querySelector('.ai-content');
+        uploadMsgElement.textContent = `Uploading ${file.name}...`;
+        chatMessages.parentElement.scrollTo(0, chatMessages.parentElement.scrollHeight);
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch("/upload", {
+                method: "POST",
+                body: formData
+            });
+            const result = await response.json();
+            
+            if (response.ok) {
+                uploadMsgElement.textContent = `✅ ${result.message}`;
+            } else {
+                uploadMsgElement.textContent = `❌ Error: ${result.error}`;
+            }
+        } catch (error) {
+            uploadMsgElement.textContent = `❌ Failed to upload document.`;
+        }
+        
+        fileInput.value = ""; // Reset input
+    });
+
+    // New Chat Logic
+    const newChatBtn = document.getElementById("new-chat-btn");
+    if (newChatBtn) {
+        newChatBtn.addEventListener("click", () => {
+            chatMessages.innerHTML = '';
+            threadId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+        });
+    }
+
+    // Settings Modal Logic
+    const settingsBtn = document.getElementById("open-settings-btn");
+    const settingsModal = document.getElementById("settings-modal");
+    const closeSettings = document.getElementById("close-settings");
+    const saveSettings = document.getElementById("save-settings");
+    const personaInput = document.getElementById("persona-input");
+
+    if (settingsBtn && settingsModal) {
+        settingsBtn.addEventListener("click", () => {
+            personaInput.value = persona;
+            settingsModal.classList.remove("hidden");
+        });
+        closeSettings.addEventListener("click", () => settingsModal.classList.add("hidden"));
+        saveSettings.addEventListener("click", () => {
+            persona = personaInput.value.trim() || "You are a helpful AI assistant.";
+            localStorage.setItem("chat_persona", persona);
+            settingsModal.classList.add("hidden");
+        });
+    }
+
+    // History Logic
+    async function loadHistory() {
+        try {
+            const res = await fetch("/history");
+            const data = await res.json();
+            historyList.innerHTML = "";
+            if (data.history && data.history.length > 0) {
+                data.history.forEach(item => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<a href="#" class="flex items-center gap-3 px-4 py-3 text-on-surface-variant font-medium hover:bg-surface-container-high hover:text-on-surface transition-colors duration-200" data-thread="${item.thread_id}">
+                        <span class="material-symbols-outlined">chat_bubble</span>
+                        <span class="font-label-sm text-label-sm truncate">Chat ${item.thread_id.substring(0,6)}</span>
+                    </a>`;
+                    li.querySelector("a").addEventListener("click", async (e) => {
+                        e.preventDefault();
+                        await loadThread(item.thread_id);
+                    });
+                    historyList.appendChild(li);
+                });
+            } else {
+                historyList.innerHTML = `<li><div class="px-4 py-3 text-on-surface-variant text-sm">No history yet</div></li>`;
+            }
+        } catch (e) {
+            console.error(e);
+            historyList.innerHTML = `<li><div class="px-4 py-3 text-error text-sm">Error loading history</div></li>`;
+        }
+    }
+
+    async function loadThread(id) {
+        try {
+            const res = await fetch(`/history/${id}`);
+            const data = await res.json();
+            threadId = id;
+            chatMessages.innerHTML = "";
+            if (data.messages) {
+                data.messages.forEach(msg => {
+                    if (msg.role === "user") {
+                        chatMessages.insertAdjacentHTML('beforeend', createUserMessageElement(msg.content));
+                    } else {
+                        const msgId = 'msg-' + Math.random().toString(36).substr(2, 9);
+                        chatMessages.insertAdjacentHTML('beforeend', createAIMessageElement(msgId));
+                        document.getElementById(msgId).querySelector('.ai-content').textContent = msg.content;
+                    }
+                });
+                chatMessages.parentElement.scrollTo(0, chatMessages.parentElement.scrollHeight);
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Error loading thread");
+        }
+    }
+
+    // Load history on startup
+    loadHistory();
+</script>
+</body></html>
