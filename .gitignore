@@ -4,3 +4,4 @@ __pycache__/
 .DS_Store
 chats.db*
 scratch/
+google_credentials.json
